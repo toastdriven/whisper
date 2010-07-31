@@ -27,9 +27,10 @@ var PORT = 8000;
 var DB_NAME = 'whisper';
 
 var author = 'Daniel Lindsley';
-var version = [0, 1, 0];
+var version = [0, 1, 1];
 
-var parse_date = require('./date_parser').parse_date;
+var parse_date = require('./dates').parse_date;
+var sql_date = require('./dates').sql_date;
 var fs = require('fs');
 var http = require('http');
 var mustache = require('mustache');
@@ -56,12 +57,12 @@ function process_entry(raw_row) {
   catch(err) {
     sys.debug('Got created error on '+raw_row.id+': '+err);
   }
-  sys.puts(sys.inspect(raw_row.created));
+  // sys.puts(sys.inspect(raw_row.created));
   return refined;
 }
 
 
-function show_list(request, response) {
+function show_list(request, response, matches) {
   var entries = [];
   c.query("SELECT * FROM entries ORDER BY created DESC LIMIT 5;", function (err, rows) {
     if (err) throw err;
@@ -76,18 +77,37 @@ function show_list(request, response) {
 }
 
 
-function show_detail(request, response, slug) {
-  c.query("SELECT * FROM entries WHERE slug = '"+c.escapeString(slug)+"' LIMIT 5;", function (err, rows) {
+function show_detail(request, response, matches) {
+  var year = parseInt(matches[1]);
+  var month = parseInt(matches[2]) - 1;
+  var day = parseInt(matches[3]);
+  var start_date = new Date(year, month, day);
+  var end_date = new Date(year, month, day + 1);
+  var slug = matches[4];
+  var lookup_query = "SELECT * " + 
+                     "FROM entries " +
+                     "WHERE slug = '" + c.escapeString(slug) + "' " + 
+                     "AND created >= '" + sql_date(start_date) + "' " + 
+                     "AND created < '" + sql_date(end_date) + "' " + 
+                     "LIMIT 1;"
+  // sys.debug(lookup_query);
+  c.query(lookup_query, function (err, rows) {
     if (err) throw err;
-    if(rows.length < 0) {
+    if(rows.length <= 0) {
       show_404(request, response);
     }
     else {
       sys.log('[200] GET '+request.url);
-      sys.puts(JSON.stringify(rows[0]));
+      // sys.puts(JSON.stringify(rows[0]));
       entry = process_entry(rows[0]);
       response.writeHead(200, {'Content-Type': 'text/html'});
-      response.write(render_to_response({'entry': entry}));
+      response.write(render_to_response({
+        'entry': entry,
+        'year': year,
+        'month': month + 1,
+        'day': day,
+        'slug': slug
+      }));
       response.end();
     }
   });
@@ -103,28 +123,24 @@ function show_404(request, response) {
 
 
 http.createServer(function(request, response) {
-  var path_bits = [];
-  var parsed_url = url.parse(request.url, true);
-  var path_bits = parsed_url['pathname'].split('/');
+  var urls = [
+    ['^/$', show_list],
+    ['^/(\\d{4})/(\\d{2})/(\\d{2})/([\\w\\d_.-]+)(/?)$', show_detail],
+  ]
+  var view_found = false;
   
-  if(path_bits[0] == '') {
-    path_bits.shift();
+  for(pattern_offset in urls) {
+    var current_pattern = urls[pattern_offset];
+    var url_regex = new RegExp(current_pattern[0]);
+    
+    if(request.url.match(url_regex)) {
+      var matches = url_regex.exec(request.url);
+      current_pattern[1](request, response, matches);
+      view_found = true;
+    }
   }
   
-  if(path_bits.length > 0 && path_bits[path_bits.length - 1] == '') {
-    path_bits.pop();
-  }
-  
-  if(path_bits.length == 0) {
-    show_list(request, response);
-  }
-  else if(path_bits[0] == 'favicon.ico') {
-    show_404(request, response);
-  }
-  else if(path_bits.length == 1) {
-    show_detail(request, response, path_bits[0]);
-  }
-  else {
+  if(!view_found) {
     show_404(request, response);
   }
 }).listen(PORT);
