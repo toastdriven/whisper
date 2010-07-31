@@ -3,6 +3,7 @@ exports.parse_date = parse_date;
 exports.sql_date = sql_date;
 exports.just_date = just_date;
 exports.just_time = just_time;
+exports.zero_pad = zero_pad;
 
 function parse_date(date_string) {
   if(date_string == undefined || typeof(date_string.match) == undefined) {

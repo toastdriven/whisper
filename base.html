@@ -26,6 +26,31 @@
         </div>
       </div>
       {{/entry}}
+      
+      {{#new_entry}}
+      <form method="post" action="">
+        <ul>
+          <li>
+            <label>Secret Password: <input type="text" name="password"></label>
+          </li>
+          <li>
+            <label>Title: <input type="text" name="title"></label>
+          </li>
+          <li>
+            <label>Slug: <input type="text" name="slug"></label>
+          </li>
+          <li>
+            <label>Tease: <input type="text" name="tease"></label>
+          </li>
+          <li>
+            <label>Body: <textarea rows="20" cols="80" name="body"></textarea></label>
+          </li>
+          <li>
+            <input type="submit" value="Save">
+          </li>
+        </ul>
+      </form>
+      {{/new_entry}}
     </section>
   </body>
 </html>
