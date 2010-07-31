@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>My Whisper Blog</title>
+  </head>
+  <body>
+    <section>
+      <header><a href='/'>My Whisper Blog</a></header>
+      
+      {{error}}
+      
+      <dl>
+        {{#entries}}
+        <dt><a href="/{{slug}}">{{title}}</a></dt>
+        <dd>{{tease}}</dd>
+        {{/entries}}
+      </dl>
+      
+      {{#entry}}
+      <div class="entry">
+        <h2><a href="/{{slug}}">{{title}}</a></h2>
+        <p>Posted on {{created}} or {{#created}}{{getFullYear}}-{{getMonth}}-{{getDate}}{{/created}}</p>
+        
+        <div class="body">
+          {{body}}
+        </div>
+      </div>
+      {{/entry}}
+    </section>
+  </body>
+</html>
