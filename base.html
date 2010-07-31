@@ -2,10 +2,60 @@
 <html>
   <head>
     <title>My Whisper Blog</title>
+    <style type="text/css">
+    * {
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      background-color: #EEEEEE;
+      color: #555555;
+      font-family: Georgia, Times New Roman, serif;
+      text-align: center;
+    }
+    header {
+      font-weight: bold;
+    }
+    #blog_title {
+      border-bottom: solid 2px #333333;
+      display: block;
+      margin-bottom: 10px;
+      padding-bottom: 20px;
+      text-align: center;
+    }
+    #blog_title a {
+      color: #333333;
+      font-size: 20pt;
+      font-weight: bold;
+      
+      text-decoration: none;
+      text-shadow: 1px 1px 1px #DDDDDD;
+    }
+    #content {
+      background-color: #FFFFFF;
+      margin: 0 auto;
+      padding: 20px;
+      text-align: left;
+      width: 600px;
+    }
+    form ul {
+      list-style: none;
+    }
+    form ul li {
+      margin-bottom: 5px;
+    }
+    form ul li input {
+      padding: 3px;
+      width: ;
+    }
+    label {
+      display: block;
+    }
+    </style>
   </head>
   <body>
-    <section>
-      <header><a href='/'>My Whisper Blog</a></header>
+    <section id="content">
+      <header id="blog_title"><a href='/'>My Whisper Blog</a></header>
       
       {{error}}
       
@@ -31,19 +81,19 @@
       <form method="post" action="">
         <ul>
           <li>
-            <label>Secret Password: <input type="text" name="password"></label>
+            <label for="id_password">Secret Password:</label> <input type="text" id="id_password" name="password">
           </li>
           <li>
-            <label>Title: <input type="text" name="title"></label>
+            <label for="id_title">Title:</label> <input type="text" id="id_title" name="title" length="255">
           </li>
           <li>
-            <label>Slug: <input type="text" name="slug"></label>
+            <label for="id_slug">Slug:</label> <input type="text" id="id_slug" name="slug" length="50"></label>
           </li>
           <li>
-            <label>Tease: <input type="text" name="tease"></label>
+            <label for="id_tease">Tease:</label> <input type="text" id="id_tease" name="tease" length="1000"></label>
           </li>
           <li>
-            <label>Body: <textarea rows="20" cols="80" name="body"></textarea></label>
+            <label for="id_body">Body:</label> <textarea rows="20" cols="80" id="id_body" name="body"></textarea>
           </li>
           <li>
             <input type="submit" value="Save">

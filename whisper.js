@@ -27,7 +27,7 @@ var PORT = 8000;
 var DB_NAME = 'whisper';
 
 var author = 'Daniel Lindsley';
-var version = [0, 2, 0];
+var version = [0, 2, 1];
 
 var parse_date = require('./dates').parse_date;
 var sql_date = require('./dates').sql_date;
